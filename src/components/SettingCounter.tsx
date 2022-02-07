@@ -1,17 +1,42 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Box, Button, ButtonGroup, Paper, TextField, Typography} from '@mui/material';
 
 type SettingCounterPropsType = {
+    error: boolean
+    maxValue: number
+    startValue: number
+    setMaxValue: (value: number) => void
+    setStartValue: (value: number) => void
+    setError: (error: boolean) => void
     getSettings: (maxValue: number, startValue: number) => void
+    setEnteringText: (value: boolean) => void
 }
 
-export const SettingCounter = ({getSettings}: SettingCounterPropsType) => {
-    const [maxValue,setMaxValue] = useState<number>(0)
-    const [startValue,setStartValue] = useState<number>(0)
+export const SettingCounter = (props: SettingCounterPropsType) => {
+    const {error, maxValue, startValue, setMaxValue, setStartValue, setError, getSettings, setEnteringText} = props
     // Functions
-    const handlerMaxValue = (e: ChangeEvent<HTMLInputElement>) => setMaxValue(+(e.currentTarget.value))
-    const handlerStartValue = (e: ChangeEvent<HTMLInputElement>) => setStartValue(+(e.currentTarget.value))
-    const handlerClick = () => getSettings(maxValue,startValue)
+    const handlerMaxValue = (e: ChangeEvent<HTMLInputElement>) => {
+        if (+(e.currentTarget.value) === startValue) {
+            setError(true)
+        } else {
+            setMaxValue(+(e.currentTarget.value))
+            setError(false)
+            setEnteringText(true)
+        }
+    }
+    const handlerStartValue = (e: ChangeEvent<HTMLInputElement>) => {
+        if (+(e.currentTarget.value) === maxValue || +(e.currentTarget.value) === -1) {
+            setError(true)
+        } else {
+            setStartValue(+(e.currentTarget.value))
+            setError(false)
+            setEnteringText(true)
+        }
+    }
+    const handlerClick = () => {
+        getSettings(maxValue, startValue)
+        setEnteringText(false)
+    }
 
     return (
         <Paper elevation={24} className={'block'}>
